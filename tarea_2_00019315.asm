@@ -38,4 +38,26 @@
         mov     cl, "D"
         mov     [208h], cl
 
+        ; Ejercicio 2
+
+        mov     ax, 0000h ; Inicializamos ax
+        mov     bx, 0000h
+        mov     dx, 0000h
+        mov     di, 0d
+        mov     cx, 11d
+        
+        mov     ax, 2d
+lupi:   mov     bx, 2d
+        mul     bx
+
+        cmp     ax, 0100h
+        JBE     inst1
+        inc     di
+
+inst1:  mov     [210h + di], ax
+        inc     di
+
+
+        loop    lupi 
+
         int     20h
