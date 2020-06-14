@@ -1,95 +1,249 @@
 org	100h
 
 section .text
-	    call 	texto  	;iniciamos modo texto
+	    call 	texto  	
 
-	    xor 	si, si 	;lo mimso que: mov si, 0000h
-lupi:	call 	kb
-	    cmp 	al, "$" ;   "h o l a $"
-			;si; 0 1 2 3 4
-	    je	    mostrar
-	    mov	    [300h+si], al ; CS:0300h en adelante
-	    inc 	si
-	    jmp 	lupi
+	    xor 	si, si 	
+lupi:	
 
-mostrar:call 	calc
+	call 	kb
+	cmp 	al, "$" 
+	je	    mostrar
+	mov	    [350h+si], al
+	inc 	si
+	jmp 	lupi
 
-	    ;call 	kb	; solo detenemos la ejecución
-        int 20h
+texto:	
 
-texto:	mov 	ah, 00h
-	    mov	    al, 03h
-	    int 	10h
-	    ret
+	mov 	ah, 00h
+	mov	    al, 03h
+	int 	10h
+	ret
 
-kb:	    mov	    ah, 00h ;subrutina que detiene la ejecución hasta recibir
-	    int 	16h	;algun carácter en el buffer del teclado
-	    ret		;este carácter lo guarda en el registro AL
+kb:	
 
-calc:   mov     al, [300h]
+    mov	    ah, 00h
+	int 	16h
+	ret		
 
-        cmp     al, 31h
-        jbe     conv1
+mostrar:
 
-        call    w_strng3
+	call 	w_strng_resultado
 
-        ;cmp     al, 0001h
-        ;jbe     w_strng
+	int 20h
 
-        ;cmp     al, 2d
-        ;jbe     w_strng2
-        
-        ret
+calc:   
 
-w_strng:mov	    ah, 13h
-	    mov 	al, 01h ; asigna a todos los caracteres el atributo de BL,
-			; actualiza la posición del cursor
-	    mov 	bh, 00h ; número de página
-	    mov 	bl, 00001111b ; atributo de caracter
-	    mov 	cx, len ; tamaño del string (SI, porque todavía guarda la última posición)
-	    mov 	dl, 10h ; columna inicial
-	    mov 	dh, 7h	; fila inicial
-	; Como esta interrupción saca el string de ES:BP, tenemos que poner los valores correcpondientes
-	    push 	cs ; Segmento actual en el que está guardado nuestro string
-	    pop 	es ; Puntero al segmento que queremos 
-	    mov 	bp, msg ; Dirección inicial de nuestra cadena de texto
-	; ES:BP equals CS:300h 
-	    int 20h
+	mov     ax, [350h]
+	mov 	bx, [351h]
+	add		ax, bx
+    mov 	bx, [352h]
+	add		ax, bx
+    mov 	bx, [353h]
+	add		ax, bx
+	mov 	bx, [354h]
+	add		ax, bx
+	mov 	bl, 5d
+	div 	bl
 
-w_strng2:   mov	    ah, 13h
-	        mov 	al, 01h ; asigna a todos los caracteres el atributo de BL,
-		    	; actualiza la posición del cursor
-	        mov 	bh, 00h ; número de página
-	        mov 	bl, 00001111b ; atributo de caracter
-	        mov 	cx, len2 ; tamaño del string (SI, porque todavía guarda la última posición)
-	        mov 	dl, 10h ; columna inicial
-	        mov 	dh, 7h	; fila inicial
-	            ; Como esta interrupción saca el string de ES:BP, tenemos que poner los valores correcpondientes
-	        push 	cs ; Segmento actual en el que está guardado nuestro string
-	        pop 	es ; Puntero al segmento que queremos 
-	        mov 	bp, msg2 ; Dirección inicial de nuestra cadena de texto
-	            ; ES:BP equals CS:300h 
-	        int 20h
+	cmp 	al, 1d
+	je		w_strng
 
-w_strng3:   mov	    ah, 13h
-	        mov 	al, 01h ; asigna a todos los caracteres el atributo de BL,
-		    	; actualiza la posición del cursor
-	        mov 	bh, 00h ; número de página
-	        mov 	bl, 00001111b ; atributo de caracter
-	        mov 	cx, len3 ; tamaño del string (SI, porque todavía guarda la última posición)
-	        mov 	dl, 10h ; columna inicial
-	        mov 	dh, 7h	; fila inicial
-	            ; Como esta interrupción saca el string de ES:BP, tenemos que poner los valores correcpondientes
-	        push 	cs ; Segmento actual en el que está guardado nuestro string
-	        pop 	es ; Puntero al segmento que queremos 
-	        mov 	bp, msg3 ; Dirección inicial de nuestra cadena de texto
-	            ; ES:BP equals CS:300h 
-	        int 20h
-conv1:  
-        ;call    w_strng
-        mov     al, 1d
-        ;call    w_strng2
-        ret
+	cmp 	al, 2d
+	je		w_strng2
+
+	cmp 	al, 3d
+	je		w_strng3
+
+	cmp 	al, 4d
+	je		w_strng4
+
+	cmp 	al, 5d
+	je		w_strng5
+
+	cmp 	al, 6d
+	je		w_strng6
+
+	cmp 	al, 7d
+	je		w_strng7
+
+	cmp 	al, 8d
+	je		w_strng8
+
+	cmp 	al, 9d
+	je		w_strng9
+
+	cmp 	al, 10d
+	je		w_strng10
+
+	ret
+
+w_strng:
+
+	mov	    ah, 13h
+	mov 	al, 01h
+	mov 	bh, 00h
+	mov 	bl, 00001111b
+	mov 	cx, len
+	mov 	dl, 10d
+	mov 	dh, 7d
+	push 	cs
+	pop 	es
+	mov 	bp, msg
+	int 10h
+	ret
+
+w_strng2:   
+
+	mov	    ah, 13h
+	mov 	al, 01h
+	mov 	bh, 00h
+	mov 	bl, 00001111b
+	mov 	cx, len2
+	mov 	dl, 10d
+	mov 	dh, 7d
+	push 	cs
+	pop 	es
+	mov 	bp, msg2
+	int 10h
+	ret
+
+w_strng3:   
+
+	mov	    ah, 13h
+	mov 	al, 01h
+	mov 	bh, 00h
+	mov 	bl, 00001111b
+	mov 	cx, len3
+	mov 	dl, 10d
+	mov 	dh, 7d
+	push 	cs
+	pop 	es
+	mov 	bp, msg3
+	int 10h
+	ret
+
+w_strng4:   
+
+	mov	    ah, 13h
+	mov 	al, 01h
+	mov 	bh, 00h
+	mov 	bl, 00001111b
+	mov 	cx, len4
+	mov 	dl, 10d
+	mov 	dh, 7d
+	push 	cs
+	pop 	es
+	mov 	bp, msg4
+	int 10h
+	ret
+
+w_strng5:   
+
+	mov	    ah, 13h
+	mov 	al, 01h
+	mov 	bh, 00h
+	mov 	bl, 00001111b
+	mov 	cx, len5
+	mov 	dl, 10d
+	mov 	dh, 7d
+	push 	cs
+	pop 	es
+	mov 	bp, msg5
+	int 10h
+	ret
+
+w_strng6:   
+
+	mov	    ah, 13h
+	mov 	al, 01h
+	mov 	bh, 00h
+	mov 	bl, 00001111b
+	mov 	cx, len6
+	mov 	dl, 10d
+	mov 	dh, 7d
+	push 	cs
+	pop 	es
+	mov 	bp, msg6
+	int 10h
+	ret
+
+w_strng7:   
+
+	mov	    ah, 13h
+	mov 	al, 01h
+	mov 	bh, 00h
+	mov 	bl, 00001111b
+	mov 	cx, len7
+	mov 	dl, 10d
+	mov 	dh, 7d
+	push 	cs
+	pop 	es
+	mov 	bp, msg7
+	int 10h
+	ret
+
+w_strng8:   
+
+	mov	    ah, 13h
+	mov 	al, 01h
+	mov 	bh, 00h
+	mov 	bl, 00001111b
+	mov 	cx, len8
+	mov 	dl, 10d
+	mov 	dh, 7d
+	push 	cs
+	pop 	es
+	mov 	bp, msg8
+	int 10h
+	ret
+
+w_strng9:   
+
+	mov	    ah, 13h
+	mov 	al, 01h
+	mov 	bh, 00h
+	mov 	bl, 00001111b
+	mov 	cx, len9
+	mov 	dl, 10d
+	mov 	dh, 7d
+	push 	cs
+	pop 	es
+	mov 	bp, msg9
+	int 10h
+	ret
+
+w_strng10:   
+
+	mov	    ah, 13h
+	mov 	al, 01h
+	mov 	bh, 00h
+	mov 	bl, 00001111b
+	mov 	cx, len10
+	mov 	dl, 10d
+	mov 	dh, 7d
+	push 	cs
+	pop 	es
+	mov 	bp, msg10
+	int 10h
+	ret
+
+w_strng_resultado:   
+
+	mov	    ah, 13h
+	mov 	al, 01h
+	mov 	bh, 00h
+	mov 	bl, 00001111b
+	mov 	cx, len11
+	mov 	dl, 10d
+	mov 	dh, 6d
+	push 	cs
+	pop 	es
+	mov 	bp, msg11
+	int 10h
+
+	jmp 	calc
+	ret
 
 section .data
 msg	db 	"Solo necesito el 0"
@@ -120,4 +274,7 @@ msg9 db "Siempre me esfuerzo"
 len9    equ	$-msg9
 
 msg10 db "Perfecto solo Dios"
-len10    equ	$-msg10
+len10    equ $-msg10
+
+msg11 db "Resultado"
+len11    equ $-msg11
